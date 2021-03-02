@@ -7,12 +7,13 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import Signin from "./src/components/screens/Signin";
 import Signup from "./src/components/screens/Signup";
+import theme from "./src/theme";
 
 const Stack = createStackNavigator();
 
 export default function App() {
   return (
-    <ThemeProvider>
+    <ThemeProvider theme={theme}>
       <SafeAreaProvider>
         <NavigationContainer>
           <Stack.Navigator>
