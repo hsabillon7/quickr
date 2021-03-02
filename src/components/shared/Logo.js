@@ -6,7 +6,7 @@ const { width, height } = Dimensions.get("screen");
 
 const Logo = () => {
   return (
-    <View>
+    <View style={styles.container}>
       <Image
         style={styles.logo}
         source={{ uri: require("../../../assets/quickr_logo.png") }}
@@ -16,6 +16,9 @@ const Logo = () => {
 };
 
 const styles = StyleSheet.create({
+  container: {
+    alignSelf: "center",
+  },
   logo: {
     width: width * 0.6,
     height: height * 0.3,
