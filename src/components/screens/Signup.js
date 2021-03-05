@@ -11,7 +11,7 @@ const Signup = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Logo />
-      <SignupForm />
+      <SignupForm navigation={navigation} />
       <TouchableOpacity
         onPress={() => {
           navigation.goBack();
