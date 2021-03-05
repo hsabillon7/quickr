@@ -31,7 +31,6 @@ const SigninForm = () => {
       .signInWithEmailAndPassword(email, password)
       .then((response) => console.log(response))
       .catch((error) => {
-        console.log(error);
         setError(error.message);
       });
   };
