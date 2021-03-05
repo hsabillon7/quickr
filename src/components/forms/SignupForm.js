@@ -4,6 +4,7 @@ import { Input, Button } from "react-native-elements";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { firebase } from "../../firebase";
 import { validate } from "email-validator";
+import Alert from "../shared/Alert";
 
 const SignupForm = ({ navigation }) => {
   const [fullname, setFullname] = useState("");
@@ -14,6 +15,7 @@ const SignupForm = ({ navigation }) => {
   const [emailError, setEmailError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
   const [confirmPasswordError, setConfirmPasswordError] = useState(false);
+  const [error, setError] = useState("");
 
   // Verifica que los datos ingresados sean correctos
   const handleVerify = (input) => {
@@ -44,13 +46,38 @@ const SignupForm = ({ navigation }) => {
       .auth()
       .createUserWithEmailAndPassword(email, password)
       .then((response) => {
-        navigation.navigate("Signin", { userCreated: true });
+        // Obtener el Unique Identifier generado para cada usuario
+        // Firebase -> Authentication
+        const uid = response.user.uid;
+
+        // Construir el objeto que le enviaremos a la collección de "users"
+        const data = {
+          id: uid,
+          email,
+          fullname,
+        };
+
+        // Obtener la colección desde Firebase
+        const usersRef = firebase.firestore().collection("users");
+
+        // Almacenar la información del usuario que se registra en Firestore
+        usersRef
+          .doc(uid)
+          .set(data)
+          .then(() => {
+            navigation.navigate("Home");
+          })
+          .catch((error) => {
+            console.log(error);
+            setError(error.message);
+          });
       })
-      .catch((error) => console.log(error));
+      .catch((error) => setError(error.message));
   };
 
   return (
     <View>
+      {error ? <Alert type="error" title={error} /> : null}
       <Input
         placeholder="Full name"
         leftIcon={<Icon name="user" />}
