@@ -7,6 +7,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import Signin from "./src/components/screens/Signin";
 import Signup from "./src/components/screens/Signup";
+import Home from "./src/components/screens/Home";
 import theme from "./src/theme";
 
 const Stack = createStackNavigator();
@@ -24,6 +25,7 @@ export default function App() {
               options={{ headerShown: false }}
             />
             <Stack.Screen name="Signup" component={Signup} />
+            <Stack.Screen name="Home" component={Home} />
           </Stack.Navigator>
         </NavigationContainer>
       </SafeAreaProvider>
