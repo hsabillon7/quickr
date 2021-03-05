@@ -1,18 +1,9 @@
 import React from "react";
-import {
-  Dimensions,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-  Text,
-} from "react-native";
-import { Input, Button } from "react-native-elements";
+import { StyleSheet, TouchableOpacity, View, Text } from "react-native";
 import Logo from "../shared/Logo";
 import SigninForm from "../forms/SigninForm";
 import theme from "../../theme";
 import Alert from "../shared/Alert";
-
-const { width, height } = Dimensions.get("screen");
 
 const Login = ({ navigation, route }) => {
   const { userCreated } = route.params;
