@@ -13,7 +13,7 @@ const Login = ({ navigation, route }) => {
       {userCreated ? (
         <Alert type="success" title="User created! You can now sign in!" />
       ) : null}
-      <SigninForm />
+      <SigninForm navigation={navigation} />
       <Text style={styles.forgotPassword}>Forgot your password?</Text>
       <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
         <Text>Don't have an account? Sign up</Text>
