@@ -1,17 +1,27 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, View, Text } from "react-native";
 import { Input, Button } from "react-native-elements";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { validate } from "email-validator";
-import { firebase } from "../../firebase";
 import Alert from "../shared/Alert";
+import { Context as AuthContext } from "../../providers/AuthContext";
 
 const SigninForm = ({ navigation }) => {
+  // Implementación del Context para funcionalidades de autenticación
+  const { state, signin } = useContext(AuthContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    setError(state.errorMessage);
+  }, [state.errorMessage]);
+
+  useEffect(() => {
+    console.log(state.user);
+  }, [state.user]);
 
   // Verifica que se ingresan los datos del email y el password
   const handleVerify = (input) => {
@@ -26,37 +36,8 @@ const SigninForm = ({ navigation }) => {
   };
 
   const handleSignin = () => {
-    firebase
-      .auth()
-      .signInWithEmailAndPassword(email, password)
-      .then((response) => {
-        // Obtener el Unique Identifier generado para cada usuario
-        // Firebase -> Authentication
-        const uid = response.user.uid;
-
-        // Obtener la colección desde Firebase
-        const usersRef = firebase.firestore().collection("users");
-
-        // Verificar que el usuario existe en Firebase authentication
-        // y también está almacenado en la colección de usuarios.
-        usersRef
-          .doc(uid)
-          .get()
-          .then((firestoreDocument) => {
-            if (!firestoreDocument.exists) {
-              setError("User does not exist in the database!");
-              return;
-            }
-
-            // Obtener la información del usuario y enviarla a la pantalla Home
-            const user = firestoreDocument.data();
-
-            navigation.navigate("Home", { user });
-          });
-      })
-      .catch((error) => {
-        setError(error.message);
-      });
+    // Iniciar sesión implementado el Contexto de autenticación
+    signin(email, password);
   };
 
   return (
