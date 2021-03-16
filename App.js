@@ -1,5 +1,5 @@
 import React from "react";
-import { ThemeProvider } from "react-native-elements";
+import { Provider as PaperProvider } from "react-native-paper";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import Navigation from "./src/components/navigation";
 import theme from "./src/theme";
@@ -11,11 +11,11 @@ export default function App() {
 
   return (
     <AuthProvider>
-      <ThemeProvider theme={theme}>
+      <PaperProvider theme={theme}>
         <SafeAreaProvider>
           <Navigation />
         </SafeAreaProvider>
-      </ThemeProvider>
+      </PaperProvider>
     </AuthProvider>
   );
 }

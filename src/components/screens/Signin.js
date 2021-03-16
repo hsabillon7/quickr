@@ -1,9 +1,9 @@
 import React from "react";
-import { StyleSheet, TouchableOpacity, View, Text } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { Text } from "react-native-paper";
 import Logo from "../shared/Logo";
 import SigninForm from "../forms/SigninForm";
 import theme from "../../theme";
-import Alert from "../shared/Alert";
 
 const Login = ({ navigation }) => {
   return (
@@ -12,7 +12,9 @@ const Login = ({ navigation }) => {
       <SigninForm />
       <Text style={styles.forgotPassword}>Forgot your password?</Text>
       <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
-        <Text>Don't have an account? Sign up</Text>
+        <Text>
+          Don't have an account? <Text style={styles.signup}>Sign up</Text>
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -27,6 +29,10 @@ const styles = StyleSheet.create({
   },
   forgotPassword: {
     textAlign: "right",
+    color: theme.colors.primary,
+  },
+  signup: {
+    color: theme.colors.primary,
   },
 });
 
