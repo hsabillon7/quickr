@@ -6,7 +6,7 @@ import { validate } from "email-validator";
 import Alert from "../shared/Alert";
 import { Context as AuthContext } from "../../providers/AuthContext";
 
-const SigninForm = ({ navigation }) => {
+const SigninForm = () => {
   // Implementación del Context para funcionalidades de autenticación
   const { state, signin } = useContext(AuthContext);
   const [email, setEmail] = useState("");
