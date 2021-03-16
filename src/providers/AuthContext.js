@@ -11,7 +11,12 @@ const authReducer = (state, action) => {
     case "signout":
       return { ...state, user: action.payload, loggedIn: false };
     case "persistLogin":
-      return { ...state, user: action.payload, loggedIn: true };
+      return {
+        ...state,
+        user: action.payload.user,
+        loggedIn: action.payload.loggedIn,
+        loading: false,
+      };
     default:
       return state;
   }
@@ -79,11 +84,19 @@ const persistLogin = (dispatch) => () => {
         .doc(user.uid)
         .get()
         .then((document) => {
-          dispatch({ type: "persistLogin", payload: document.data() });
+          dispatch({
+            type: "persistLogin",
+            payload: { user: document.data(), loggedIn: true },
+          });
         })
         .catch((error) => {
           dispatch({ type: "errorMessage", payload: error.message });
         });
+    } else {
+      dispatch({
+        type: "persistLogin",
+        payload: { user: {}, loggedIn: false },
+      });
     }
   });
 };
@@ -100,5 +113,6 @@ export const { Provider, Context } = createDataContext(
     user: {},
     errorMessage: "",
     loggedIn: false,
+    loading: true,
   }
 );
