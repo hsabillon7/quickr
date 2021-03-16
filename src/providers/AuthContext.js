@@ -1,6 +1,5 @@
 import createDataContext from "./createDataContext";
 import { firebase } from "../firebase";
-import PersistLogin from "../firebase/persistLogin";
 
 // Acciones disponibles para el reducer
 const authReducer = (state, action) => {
@@ -8,7 +7,11 @@ const authReducer = (state, action) => {
     case "errorMessage":
       return { ...state, errorMessage: action.payload };
     case "signin":
-      return { ...state, user: action.payload };
+      return { ...state, user: action.payload, loggedIn: true };
+    case "signout":
+      return { ...state, user: action.payload, loggedIn: false };
+    case "persistLogin":
+      return { ...state, user: action.payload, loggedIn: true };
     default:
       return state;
   }
@@ -51,14 +54,51 @@ const signin = (dispatch) => (email, password) => {
     });
 };
 
+// Cierra la sesión del usuario
+const signout = (dispatch) => () => {
+  firebase
+    .auth()
+    .signOut()
+    .then(() => {
+      dispatch({ type: "signout", payload: {} });
+    })
+    .catch((error) => {
+      dispatch({ type: "errorMessage", payload: error.message });
+    });
+};
+
+// Verifica si existe el token de firebase para iniciar sesión sin credenciales
+const persistLogin = (dispatch) => () => {
+  const userRef = firebase.firestore().collection("users");
+
+  // Si el usuario ya se ha autenticado previamente, retornar
+  // la información del usuario, caso contrario,retonar un objeto vacío.
+  firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
+      userRef
+        .doc(user.uid)
+        .get()
+        .then((document) => {
+          dispatch({ type: "persistLogin", payload: document.data() });
+        })
+        .catch((error) => {
+          dispatch({ type: "errorMessage", payload: error.message });
+        });
+    }
+  });
+};
+
 // Exportar las funcionalidades requeridas al contexto
 export const { Provider, Context } = createDataContext(
   authReducer,
   {
     signin,
+    signout,
+    persistLogin,
   },
   {
     user: {},
     errorMessage: "",
+    loggedIn: false,
   }
 );
