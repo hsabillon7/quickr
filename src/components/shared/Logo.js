@@ -1,6 +1,5 @@
 import React from "react";
-import { Dimensions, StyleSheet, View } from "react-native";
-import { Image } from "react-native-elements";
+import { Dimensions, Image, StyleSheet, View } from "react-native";
 import QuickrLogo from "../../../assets/quickr_logo.png";
 
 const { width, height } = Dimensions.get("screen");
