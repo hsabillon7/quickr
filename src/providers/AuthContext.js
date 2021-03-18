@@ -17,6 +17,12 @@ const authReducer = (state, action) => {
         loggedIn: action.payload.loggedIn,
         loading: false,
       };
+    case "signup":
+      return {
+        ...state,
+        user: action.payload.user,
+        registered: true,
+      };
     default:
       return state;
   }
@@ -101,6 +107,46 @@ const persistLogin = (dispatch) => () => {
   });
 };
 
+const signup = (dispatch) => (fullname, email, password) => {
+  firebase
+    .auth()
+    .createUserWithEmailAndPassword(email, password)
+    .then((response) => {
+      // Obtener el Unique Identifier generado para cada usuario
+      // Firebase -> Authentication
+      const uid = response.user.uid;
+
+      // Construir el objeto que le enviaremos a la collección de "users"
+      const data = {
+        id: uid,
+        email,
+        fullname,
+      };
+
+      // Obtener la colección desde Firebase
+      const usersRef = firebase.firestore().collection("users");
+
+      // Almacenar la información del usuario que se registra en Firestore
+      usersRef
+        .doc(uid)
+        .set(data)
+        .then(() => {
+          dispatch({
+            type: "signup",
+            payload: { user: data, registered: true },
+          });
+        })
+        .catch((error) => {
+          dispatch({ type: "errorMessage", payload: error.message });
+        });
+    });
+  dispatch({ type: "errorMessage", payload: error.message });
+};
+
+const clearErrorMessage = (dispatch) => () => {
+  dispatch({ type: "errorMessage", payload: "" });
+};
+
 // Exportar las funcionalidades requeridas al contexto
 export const { Provider, Context } = createDataContext(
   authReducer,
@@ -108,11 +154,14 @@ export const { Provider, Context } = createDataContext(
     signin,
     signout,
     persistLogin,
+    signup,
+    clearErrorMessage,
   },
   {
     user: {},
     errorMessage: "",
     loggedIn: false,
     loading: true,
+    registered: false,
   }
 );

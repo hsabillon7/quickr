@@ -1,12 +1,13 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import { Input, Button } from "react-native-elements";
-import Icon from "react-native-vector-icons/FontAwesome";
+import { Button, Caption, TextInput } from "react-native-paper";
 import { firebase } from "../../firebase";
 import { validate } from "email-validator";
 import Alert from "../shared/Alert";
+import { Context as AuthContext } from "../../providers/AuthContext";
 
 const SignupForm = ({ navigation }) => {
+  const { state, signup } = useContext(AuthContext);
   const [fullname, setFullname] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,6 +17,18 @@ const SignupForm = ({ navigation }) => {
   const [passwordError, setPasswordError] = useState(false);
   const [confirmPasswordError, setConfirmPasswordError] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (state.errorMessage) clearErrorMessage();
+  }, []);
+
+  useEffect(() => {
+    if (state.errorMessage) setError(state.errorMessage);
+  }, [state.errorMessage]);
+
+  useEffect(() => {
+    if (state.registered) navigation.navigate("Home");
+  }, [state]);
 
   // Verifica que los datos ingresados sean correctos
   const handleVerify = (input) => {
@@ -38,74 +51,53 @@ const SignupForm = ({ navigation }) => {
       if (!confirmPassword) setConfirmPasswordError(true);
       else if (confirmPassword !== password) setConfirmPasswordError(true);
       else setConfirmPasswordError(false);
+    } else if (input === "signup") {
+      if (
+        !fullnameError &&
+        !emailError &&
+        !passwordError &&
+        !confirmPasswordError &&
+        fullname &&
+        email &&
+        password &&
+        confirmPassword
+      )
+        signup(fullname, email, password);
+      else setError("All fields are required!");
     }
-  };
-
-  const handleSignup = () => {
-    firebase
-      .auth()
-      .createUserWithEmailAndPassword(email, password)
-      .then((response) => {
-        // Obtener el Unique Identifier generado para cada usuario
-        // Firebase -> Authentication
-        const uid = response.user.uid;
-
-        // Construir el objeto que le enviaremos a la collección de "users"
-        const data = {
-          id: uid,
-          email,
-          fullname,
-        };
-
-        // Obtener la colección desde Firebase
-        const usersRef = firebase.firestore().collection("users");
-
-        // Almacenar la información del usuario que se registra en Firestore
-        usersRef
-          .doc(uid)
-          .set(data)
-          .then(() => {
-            navigation.navigate("Home");
-          })
-          .catch((error) => {
-            console.log(error);
-            setError(error.message);
-          });
-      })
-      .catch((error) => setError(error.message));
   };
 
   return (
     <View>
       {error ? <Alert type="error" title={error} /> : null}
-      <Input
-        placeholder="Full name"
-        leftIcon={<Icon name="user" />}
+      <TextInput
+        mode="outlined"
+        label="Full name"
         value={fullname}
         onChangeText={setFullname}
         onBlur={() => {
           handleVerify("fullname");
         }}
-        errorMessage={
-          fullnameError ? "Por favor ingresa tu nombre completo" : ""
-        }
+        error={fullnameError}
       />
-      <Input
-        placeholder="Email"
-        leftIcon={<Icon name="envelope" />}
+      {fullnameError && <Caption>Por favor ingresa tu nombre completo</Caption>}
+      <TextInput
+        mode="outlined"
+        label="Email"
         value={email}
         onChangeText={setEmail}
         autoCapitalize="none"
         onBlur={() => {
           handleVerify("email");
         }}
-        errorMessage={
-          emailError ? "Por favor ingresa una dirección de correo válida" : ""
-        }
+        error={emailError}
       />
-      <Input
-        placeholder="Password"
-        leftIcon={<Icon name="lock" />}
+      {emailError && (
+        <Caption>Por favor ingresa una dirección de correo válida</Caption>
+      )}
+      <TextInput
+        mode="outlined"
+        label="Password"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
@@ -113,15 +105,16 @@ const SignupForm = ({ navigation }) => {
         onBlur={() => {
           handleVerify("password");
         }}
-        errorMessage={
-          passwordError
-            ? "Por favor ingresa una contraseña de mínimo 6 caracteres"
-            : ""
-        }
+        error={passwordError}
       />
-      <Input
-        placeholder="Confirm password"
-        leftIcon={<Icon name="lock" />}
+      {passwordError && (
+        <Caption>
+          Por favor ingresa una contraseña de mínimo 6 caracteres
+        </Caption>
+      )}
+      <TextInput
+        mode="outlined"
+        label="Confirm password"
         value={confirmPassword}
         onChangeText={setConfirmPassword}
         secureTextEntry
@@ -129,17 +122,29 @@ const SignupForm = ({ navigation }) => {
         onBlur={() => {
           handleVerify("confirmPassword");
         }}
-        errorMessage={
-          confirmPasswordError
-            ? "Por favor reingresa la contraseña y verifica que es correcta"
-            : ""
-        }
+        error={confirmPasswordError}
       />
-      <Button title="Create account" onPress={handleSignup} />
+      {confirmPasswordError && (
+        <Caption>
+          Por favor reingresa la contraseña y verifica que es correcta
+        </Caption>
+      )}
+      <Button
+        mode="contained"
+        style={styles.button}
+        onPress={() => handleVerify("signup")}
+      >
+        Create account
+      </Button>
     </View>
   );
 };
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  button: {
+    marginTop: 20,
+    marginBottom: 20,
+  },
+});
 
 export default SignupForm;
