@@ -29,7 +29,11 @@ const Navigation = () => {
         <>
           {state.loggedIn ? (
             <Stack.Navigator>
-              <Stack.Screen name="Home" component={Home} />
+              <Stack.Screen
+                name="Home"
+                component={Home}
+                options={{ headerShown: false }}
+              />
             </Stack.Navigator>
           ) : (
             <Stack.Navigator>
@@ -38,7 +42,11 @@ const Navigation = () => {
                 component={Signin}
                 options={{ headerShown: false }}
               />
-              <Stack.Screen name="Signup" component={Signup} />
+              <Stack.Screen
+                name="Signup"
+                component={Signup}
+                options={{ headerShown: false }}
+              />
             </Stack.Navigator>
           )}
         </>
