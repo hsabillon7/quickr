@@ -7,7 +7,7 @@ import { Context as AuthContext } from "../../providers/AuthContext";
 
 const SigninForm = () => {
   // Implementación del Context para funcionalidades de autenticación
-  const { state, signin } = useContext(AuthContext);
+  const { state, signin, clearErrorMessage } = useContext(AuthContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState(false);
@@ -15,12 +15,12 @@ const SigninForm = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    setError(state.errorMessage);
-  }, [state.errorMessage]);
+    if (state.errorMessage) clearErrorMessage();
+  }, []);
 
   useEffect(() => {
-    console.log(state.user);
-  }, [state.user]);
+    if (state.errorMessage) setError(state.errorMessage);
+  }, [state.errorMessage]);
 
   // Verifica que se ingresan los datos del email y el password
   const handleVerify = (input) => {
