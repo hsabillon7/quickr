@@ -1,6 +1,6 @@
 import React from "react";
 import { Dimensions, StyleSheet, TouchableOpacity, View } from "react-native";
-import { Button, Input, Text } from "react-native-elements";
+import { Text } from "react-native-paper";
 import Logo from "../shared/Logo";
 import SignupForm from "../forms/SignupForm";
 import theme from "../../theme";
@@ -17,7 +17,9 @@ const Signup = ({ navigation }) => {
           navigation.goBack();
         }}
       >
-        <Text>Already got an account? Sign in</Text>
+        <Text>
+          Already got an account? <Text style={styles.signin}>Sign in</Text>
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -29,6 +31,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 10,
     backgroundColor: theme.colors.backgroundWhite,
+  },
+  signin: {
+    color: theme.colors.primary,
   },
 });
 
