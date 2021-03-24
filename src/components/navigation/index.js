@@ -6,6 +6,7 @@ import { Context as AuthContext } from "../../providers/AuthContext";
 import Signin from "../screens/Signin";
 import Signup from "../screens/Signup";
 import Home from "../screens/Home";
+import CreateNote from "../screens/CreateNote";
 
 const Stack = createStackNavigator();
 
@@ -32,6 +33,11 @@ const Navigation = () => {
               <Stack.Screen
                 name="Home"
                 component={Home}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="CreateNote"
+                component={CreateNote}
                 options={{ headerShown: false }}
               />
             </Stack.Navigator>
