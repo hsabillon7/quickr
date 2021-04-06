@@ -7,6 +7,7 @@ import Signin from "../screens/Signin";
 import Signup from "../screens/Signup";
 import Home from "../screens/Home";
 import CreateNote from "../screens/CreateNote";
+import ModifyNote from "../screens/ModifyNote";
 
 const Stack = createStackNavigator();
 
@@ -29,17 +30,10 @@ const Navigation = () => {
       {!state.loading && (
         <>
           {state.loggedIn ? (
-            <Stack.Navigator>
-              <Stack.Screen
-                name="Home"
-                component={Home}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="CreateNote"
-                component={CreateNote}
-                options={{ headerShown: false }}
-              />
+            <Stack.Navigator screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="Home" component={Home} />
+              <Stack.Screen name="CreateNote" component={CreateNote} />
+              <Stack.Screen name="ModifyNote" component={ModifyNote} />
             </Stack.Navigator>
           ) : (
             <Stack.Navigator>
