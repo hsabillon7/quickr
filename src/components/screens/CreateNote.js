@@ -18,6 +18,8 @@ const CreateNote = ({ navigation }) => {
       setTitle("New note");
       createNote("New note", content, timestamp, state.user.id);
     } else createNote(title, content, timestamp, state.user.id);
+
+    navigation.navigate("Home");
   };
 
   return (
