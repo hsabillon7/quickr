@@ -1,23 +1,50 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { StyleSheet, View, Text } from "react-native";
 import { Appbar, Button, FAB, Title } from "react-native-paper";
 import { Context as AuthContext } from "../../providers/AuthContext";
+import { Context as NoteContext } from "../../providers/NoteContext";
+import NoteList from "../shared/NoteList";
+import Toast from "react-native-toast-message";
 
 const Home = ({ navigation }) => {
-  const { signout } = useContext(AuthContext);
+  const { state, signout } = useContext(AuthContext);
+  const { state: noteState, getNotes, clearMessage } = useContext(NoteContext);
+
+  useEffect(() => {
+    getNotes(state.user.id);
+  }, []);
+
+  useEffect(() => {
+    if (noteState.errorMessage) {
+      Toast.show({
+        text2: noteState.errorMessage,
+      });
+      clearMessage();
+    }
+  }, [noteState.errorMessage]);
+
   return (
     <>
+      <Toast ref={(ref) => Toast.setRef(ref)} />
       <View style={styles.container}>
         <Title style={styles.title}>Quickr</Title>
-        <Appbar style={styles.appbar}></Appbar>
-        <Button
-          title="Signout"
-          onPress={() => {
-            signout();
-          }}
-        />
+        <Appbar style={styles.appbar}>
+          <Appbar.Action
+            icon="logout"
+            onPress={() => {
+              signout();
+            }}
+          />
+        </Appbar>
+        <NoteList notes={noteState.notes} navigation={navigation} />
       </View>
-      <FAB icon="plus" style={styles.fab} />
+      <FAB
+        icon="plus"
+        style={styles.fab}
+        onPress={() => {
+          navigation.navigate("CreateNote");
+        }}
+      />
     </>
   );
 };
