@@ -10,6 +10,24 @@ const noteReducer = (state, action) => {
       return { ...state, notes: [...notes, action.payload] };
     case "getNotes":
       return { ...state, notes: action.payload };
+    case "setCurrentNote":
+      return { ...state, currentNote: action.payload };
+    case "updateNote":
+      return {
+        ...state,
+        notes: state.notes.map((note) => {
+          if (note.id === action.payload.note.id) {
+            return {
+              ...note,
+              title: action.payload.note.title,
+              content: action.payload.note.content,
+              timestamp: action.payload.note.timestamp,
+            };
+          }
+
+          return note;
+        }),
+      };
     default:
       return state;
   }
@@ -53,11 +71,39 @@ const getNotes = (dispatch) => (userId) => {
         });
 
         dispatch({ type: "getNotes", payload: notes });
+        dispatch({ type: "errorMessage", payload: "Your note is save!" });
       },
       (error) => {
         dispatch({ type: "errorMessage", payload: error.message });
       }
     );
+};
+
+// Limpiar el mensaje del contexto
+const clearMessage = (dispatch) => () => {
+  dispatch({ type: "errorMessage", payload: "" });
+};
+
+// Establece la nota actual seleccionada
+const setCurrentNote = (dispatch) => (note) => {
+  dispatch({ type: "setCurrentNote", payload: note });
+};
+
+// Actualizar una nota existente
+const updateNote = (dispatch) => (id, title, content, timestamp) => {
+  notesRef
+    .doc(id)
+    .update({ title, content, timestamp })
+    .then(() => {
+      dispatch({
+        type: "updateNote",
+        payload: { note: { id, title, content, timestamp } },
+      });
+      dispatch({ type: "errorMessage", payload: "Note updated!" });
+    })
+    .catch((error) => {
+      dispatch({ type: "errorMessage", payload: error.message });
+    });
 };
 
 // Exportar las funcionalidades requeridas al contexto
@@ -66,9 +112,13 @@ export const { Provider, Context } = createDataContext(
   {
     createNote,
     getNotes,
+    setCurrentNote,
+    updateNote,
+    clearMessage,
   },
   {
     notes: [],
     errorMessage: "",
+    currentNote: { id: "", title: "", content: "", timestamp: "" },
   }
 );
